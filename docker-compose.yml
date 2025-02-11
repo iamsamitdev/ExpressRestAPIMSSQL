@@ -1,0 +1,32 @@
+networks:
+  web_network:
+    name: web_network
+    driver: bridge
+
+services:
+  mssqldb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssqldb
+    environment:
+      - MSSQL_SA_PASSWORD=Samit@977040
+      - ACCEPT_EULA=1
+    ports:
+      - "1434:1433"
+    networks:
+      - web_network
+    restart: always
+  apiexpress:
+    depends_on:
+      - mssqldb
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    container_name: apiexpress
+    ports:
+      - "3000:3000"
+    # volumes:
+    #   - .:/app
+    networks:
+      - web_network
+    restart: always
